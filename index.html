@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>City Metro</title>
+  <title>City Metro Map</title>
   <link rel="stylesheet" href="leaflet.css" />
   <style>
     html, body {
       margin: 0; padding: 0;
-      height: 100vh;
+      height: 100vh; /* Full viewport height */
+      width: 100vw;  /* Full viewport width */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,8 +17,10 @@
     }
 
     #map {
-      width: clamp(1024px, 80vw, 1920px);
-      height: clamp(768px, 60vh, 1080px);
+      /* Use 98% of viewport width and 98% of viewport height
+         to leave a small margin around the map */
+      width: 98vw;
+      height: 98vh;
       border: 2px solid #444;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
