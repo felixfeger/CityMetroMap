@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>City Metro Map</title>
   <link rel="stylesheet" href="leaflet.css" />
+  <link rel="stylesheet" href="css/Control.FullScreen.css" />
   <style>
     html, body {
       margin: 0; padding: 0;
@@ -17,8 +18,6 @@
     }
 
     #map {
-      /* Use 98% of viewport width and 98% of viewport height
-         to leave a small margin around the map */
       width: 98vw;
       height: 98vh;
       border: 2px solid #444;
@@ -30,6 +29,7 @@
   <div id="map"></div>
 
   <script src="leaflet.js"></script>
+  <script src="js/Control.FullScreen.js"></script>
   <script>
     const imageWidth = 4640;
     const imageHeight = 2580;
@@ -46,7 +46,6 @@
     });
 
     L.imageOverlay('Lego City County Metro June 2025.png', bounds).addTo(map);
-
     map.fitBounds(bounds);
 
     // Adjust zoom so image fits map container width-wise or height-wise
@@ -55,11 +54,9 @@
       const containerWidth = mapDiv.clientWidth;
       const containerHeight = mapDiv.clientHeight;
 
-      // Calculate zoom based on width and height scaling factors
       const zoomWidth = Math.log2(containerWidth / imageWidth);
       const zoomHeight = Math.log2(containerHeight / imageHeight);
 
-      // Use smaller zoom to fit entire image inside container (letterbox)
       const zoom = Math.min(zoomWidth, zoomHeight);
 
       map.setZoom(zoom);
@@ -67,10 +64,10 @@
     }
 
     updateZoom();
-
     window.addEventListener('resize', updateZoom);
 
-    // No additional lines or trains
+    // Add fullscreen control
+    map.addControl(new L.Control.Fullscreen());
   </script>
 </body>
 </html>
