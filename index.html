@@ -2,27 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lego Metro Simulation with Multiple Lines</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>City Metro</title>
   <link rel="stylesheet" href="leaflet.css" />
   <style>
     html, body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       height: 100vh;
-      width: 100vw;
-      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #eee;
     }
 
     #map {
-      height: 100vh;
-      width: 100vw;
-      display: block;
+      width: clamp(1024px, 80vw, 1920px);
+      height: clamp(768px, 60vh, 1080px);
+      border: 2px solid #444;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
     }
   </style>
 </head>
 <body>
   <div id="map"></div>
+
   <script src="leaflet.js"></script>
   <script>
     const imageWidth = 5800;
@@ -43,12 +46,28 @@
 
     map.fitBounds(bounds);
 
-    // Force a zoom level that fills the vertical screen
-    const screenHeight = window.innerHeight;
-    const scaleFactor = screenHeight / imageHeight;
-    const zoomLevel = Math.log2(scaleFactor);
-    map.setZoom(zoomLevel);
+    // Adjust zoom so image fits map container width-wise or height-wise
+    function updateZoom() {
+      const mapDiv = document.getElementById('map');
+      const containerWidth = mapDiv.clientWidth;
+      const containerHeight = mapDiv.clientHeight;
 
+      // Calculate zoom based on width and height scaling factors
+      const zoomWidth = Math.log2(containerWidth / imageWidth);
+      const zoomHeight = Math.log2(containerHeight / imageHeight);
+
+      // Use smaller zoom to fit entire image inside container (letterbox)
+      const zoom = Math.min(zoomWidth, zoomHeight);
+
+      map.setZoom(zoom);
+      map.setView([imageHeight / 2, imageWidth / 2], zoom);
+    }
+
+    updateZoom();
+
+    window.addEventListener('resize', updateZoom);
+
+    // Transit lines
     const lines = {
       'A Line (Blue)': {
         color: 'blue',
@@ -93,6 +112,7 @@
       }).addTo(map).bindPopup(name);
     }
 
+    // Simulated red train dot
     const train = L.circleMarker([440, 150], {
       radius: 8,
       color: 'red',
