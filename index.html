@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Lego Metro Simulation with Multiple Lines</title>
-  <meta charset="utf-8" />
   <link rel="stylesheet" href="leaflet.css" />
   <style>
     html, body, #map {
@@ -17,7 +18,7 @@
   <div id="map"></div>
   <script src="leaflet.js"></script>
   <script>
-    // Initialize map with simple CRS for pixel coordinates
+    // Create the map using Simple CRS
     const map = L.map('map', {
       crs: L.CRS.Simple,
       minZoom: -1,
@@ -25,12 +26,12 @@
       zoomControl: true
     });
 
-    // Image bounds: [top-left pixel], [bottom-right pixel]
+    // Set image bounds based on 5800x470 (width x height)
     const bounds = [[0, 0], [470, 5800]];
     L.imageOverlay('Lego City County Metro June 2025.png', bounds).addTo(map);
     map.fitBounds(bounds);
 
-    // Define all lines with approximate pixel coordinates and colors
+    // Define transit lines
     const lines = {
       'A Line (Blue)': {
         color: 'blue',
@@ -53,11 +54,11 @@
         coords: [[440,1000],[410,1400],[380,1900],[350,2400],[320,2900],[300,3500]]
       },
       'J Line (Silver)': {
-        color: 'silver',
+        color: 'gray', // silver is not standard; using gray
         coords: [[430,800],[400,1100],[370,1500],[340,2000],[310,2600],[280,3200]]
       },
       'K Line (Pink)': {
-        color: 'pink',
+        color: 'deeppink',
         coords: [[440,1200],[420,1600],[400,2000],[380,2400],[350,2800],[320,3200]]
       },
       'Sun City Ferry (Green)': {
@@ -66,17 +67,17 @@
       }
     };
 
-    // Add each line as a polyline to the map with popup on click
+    // Draw the polylines
     for (const [name, line] of Object.entries(lines)) {
       L.polyline(line.coords, {
         color: line.color,
         weight: 5,
-        opacity: 0.8,
+        opacity: 0.9,
         smoothFactor: 1
       }).addTo(map).bindPopup(name);
     }
 
-    // Optional: simulated moving train (red dot) along a simple path
+    // Simulated red train dot
     const train = L.circleMarker([440, 150], {
       radius: 8,
       color: 'red',
@@ -95,7 +96,6 @@
       }
       train.setLatLng([y, x]);
     }, 100);
-
   </script>
 </body>
 </html>
