@@ -6,11 +6,16 @@
   <title>Lego Metro Simulation with Multiple Lines</title>
   <link rel="stylesheet" href="leaflet.css" />
   <style>
-    html, body, #map {
-      height: 100%;
+    html, body {
       margin: 0;
       padding: 0;
+      height: 100%;
+    }
+
+    #map {
       width: 100%;
+      aspect-ratio: 5800 / 470; /* Maintain correct shape */
+      max-height: 100vh;
     }
   </style>
 </head>
@@ -18,7 +23,6 @@
   <div id="map"></div>
   <script src="leaflet.js"></script>
   <script>
-    // Create the map using Simple CRS
     const map = L.map('map', {
       crs: L.CRS.Simple,
       minZoom: -1,
@@ -26,12 +30,10 @@
       zoomControl: true
     });
 
-    // Set image bounds based on 5800x470 (width x height)
     const bounds = [[0, 0], [470, 5800]];
     L.imageOverlay('Lego City County Metro June 2025.png', bounds).addTo(map);
     map.fitBounds(bounds);
 
-    // Define transit lines
     const lines = {
       'A Line (Blue)': {
         color: 'blue',
@@ -54,7 +56,7 @@
         coords: [[440,1000],[410,1400],[380,1900],[350,2400],[320,2900],[300,3500]]
       },
       'J Line (Silver)': {
-        color: 'gray', // silver is not standard; using gray
+        color: 'gray',
         coords: [[430,800],[400,1100],[370,1500],[340,2000],[310,2600],[280,3200]]
       },
       'K Line (Pink)': {
@@ -67,7 +69,6 @@
       }
     };
 
-    // Draw the polylines
     for (const [name, line] of Object.entries(lines)) {
       L.polyline(line.coords, {
         color: line.color,
@@ -77,7 +78,6 @@
       }).addTo(map).bindPopup(name);
     }
 
-    // Simulated red train dot
     const train = L.circleMarker([440, 150], {
       radius: 8,
       color: 'red',
