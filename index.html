@@ -25,23 +25,29 @@
   <div id="map"></div>
   <script src="leaflet.js"></script>
   <script>
-    const map = L.map('map', {
-      crs: L.CRS.Simple,
-      minZoom: -2,
-      maxZoom: 2,
-      zoomControl: true
-    });
-
     const imageWidth = 5800;
     const imageHeight = 470;
     const bounds = [[0, 0], [imageHeight, imageWidth]];
 
-    // Add the image overlay
+    const map = L.map('map', {
+      crs: L.CRS.Simple,
+      minZoom: -3,
+      maxZoom: 4,
+      zoomSnap: 0.1,
+      zoomDelta: 0.5,
+      zoomControl: true,
+      maxBounds: bounds,
+    });
+
     L.imageOverlay('Lego City County Metro June 2025.png', bounds).addTo(map);
 
-    // Prevent panning outside image
-    map.setMaxBounds(bounds);
     map.fitBounds(bounds);
+
+    // Force a zoom level that fills the vertical screen
+    const screenHeight = window.innerHeight;
+    const scaleFactor = screenHeight / imageHeight;
+    const zoomLevel = Math.log2(scaleFactor);
+    map.setZoom(zoomLevel);
 
     const lines = {
       'A Line (Blue)': {
