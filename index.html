@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lego Metro Simulation with Multiple Lines</title>
+  <meta charset="utf-8" />
+  <link rel="stylesheet" href="leaflet.css" />
+  <style>
+    html, body, #map {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="leaflet.js"></script>
+  <script>
+    // Initialize map with simple CRS for pixel coordinates
+    const map = L.map('map', {
+      crs: L.CRS.Simple,
+      minZoom: -1,
+      maxZoom: 2,
+      zoomControl: true
+    });
+
+    // Image bounds: [top-left pixel], [bottom-right pixel]
+    const bounds = [[0, 0], [470, 5800]];
+    L.imageOverlay('Lego City County Metro June 2025.png', bounds).addTo(map);
+    map.fitBounds(bounds);
+
+    // Define all lines with approximate pixel coordinates and colors
+    const lines = {
+      'A Line (Blue)': {
+        color: 'blue',
+        coords: [[440,150],[420,750],[380,1500],[340,2600],[300,3700],[280,4800],[260,5700]]
+      },
+      'B Line (Red)': {
+        color: 'red',
+        coords: [[430,500],[400,1300],[360,2000],[310,2900],[280,3900],[250,4800],[230,5700]]
+      },
+      'D Line (Purple)': {
+        color: 'purple',
+        coords: [[450,1200],[420,1700],[390,2300],[360,3000],[330,3700],[300,4600],[280,5400]]
+      },
+      'E Line (Yellow)': {
+        color: 'yellow',
+        coords: [[460,1400],[430,1900],[400,2500],[370,3200],[340,3900],[300,4600]]
+      },
+      'G Line (Orange)': {
+        color: 'orange',
+        coords: [[440,1000],[410,1400],[380,1900],[350,2400],[320,2900],[300,3500]]
+      },
+      'J Line (Silver)': {
+        color: 'silver',
+        coords: [[430,800],[400,1100],[370,1500],[340,2000],[310,2600],[280,3200]]
+      },
+      'K Line (Pink)': {
+        color: 'pink',
+        coords: [[440,1200],[420,1600],[400,2000],[380,2400],[350,2800],[320,3200]]
+      },
+      'Sun City Ferry (Green)': {
+        color: 'green',
+        coords: [[470,0],[460,400],[450,700],[430,1000]]
+      }
+    };
+
+    // Add each line as a polyline to the map with popup on click
+    for (const [name, line] of Object.entries(lines)) {
+      L.polyline(line.coords, {
+        color: line.color,
+        weight: 5,
+        opacity: 0.8,
+        smoothFactor: 1
+      }).addTo(map).bindPopup(name);
+    }
+
+    // Optional: simulated moving train (red dot) along a simple path
+    const train = L.circleMarker([440, 150], {
+      radius: 8,
+      color: 'red',
+      fillColor: '#f03',
+      fillOpacity: 1
+    }).addTo(map);
+
+    let x = 150;
+    let y = 440;
+    setInterval(() => {
+      x += 10;
+      y -= 1;
+      if (x > 5700 || y < 10) {
+        x = 150;
+        y = 440;
+      }
+      train.setLatLng([y, x]);
+    }, 100);
+
+  </script>
+</body>
+</html>
