@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lego Metro Simulation with Multiple Lines</title>
+  <title>City Metro Map</title>
   <link rel="stylesheet" href="leaflet.css" />
   <style>
     html, body {
@@ -13,9 +13,13 @@
     }
 
     #map {
-      width: 100%;
-      aspect-ratio: 5800 / 470; /* Maintain correct shape */
-      max-height: 100vh;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 100vh;
+      width: 100vw;
     }
   </style>
 </head>
