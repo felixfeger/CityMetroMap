@@ -15,7 +15,6 @@
       height: 100%;
       overflow: hidden;
       background: black;
-      touch-action: none; /* improves mobile dragging */
     }
 
     .leaflet-container {
@@ -28,80 +27,47 @@
       width: 100vw;
       height: 100vh;
     }
-
-    /* Mobile-friendly button */
-    #fullscreenBtn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      z-index: 1000;
-      padding: 10px 12px;
-      border: none;
-      border-radius: 8px;
-      background: white;
-      font-size: 14px;
-      cursor: pointer;
-    }
   </style>
 </head>
 
 <body>
-  <button id="fullscreenBtn">Fullscreen</button>
   <div id="map"></div>
 
   <script src="leaflet.js"></script>
 
   <script>
-    const imageWidth = 4640;
-    const imageHeight = 2580;
-    const bounds = [[0, 0], [imageHeight, imageWidth]];
+    // Your image (MetroMap.png)
+    const img = new Image();
+    img.src = "MetroMap.png";
 
-    const map = L.map('map', {
-      crs: L.CRS.Simple,
-      zoomControl: true,
-      maxBounds: bounds,
-      inertia: true,          // smoother mobile dragging
-      scrollWheelZoom: true
-    });
+    img.onload = () => {
+      const imageWidth = img.width;
+      const imageHeight = img.height;
 
-    L.imageOverlay(
-      'MetroMap.png',
-      bounds
-    ).addTo(map);
+      const bounds = [[0, 0], [imageHeight, imageWidth]];
 
-    map.fitBounds(bounds);
+      const map = L.map('map', {
+        crs: L.CRS.Simple,
+        zoomControl: true,
+        maxBounds: bounds,
+        zoomSnap: 0.1,
+        inertia: true
+      });
 
-    // FIX: always resize properly on mobile + desktop
-    function resizeMap() {
-      map.invalidateSize();
+      L.imageOverlay("MetroMap.png", bounds).addTo(map);
+
+      // Fit properly for ANY screen size
       map.fitBounds(bounds);
-    }
 
-    window.addEventListener('resize', resizeMap);
-    window.addEventListener('orientationchange', resizeMap);
-
-    // FIXED FULLSCREEN (works on iPhone, Android, desktop)
-    document.getElementById("fullscreenBtn").addEventListener("click", () => {
-      const el = document.documentElement;
-
-      if (!document.fullscreenElement) {
-        if (el.requestFullscreen) {
-          el.requestFullscreen();
-        } else if (el.webkitRequestFullscreen) {
-          el.webkitRequestFullscreen(); // iOS Safari fallback
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-          document.webkitExitFullscreen();
-        }
+      // Auto-resize fix (mobile rotation + desktop resize)
+      function resize() {
+        map.invalidateSize();
+        map.fitBounds(bounds);
       }
 
-      // Leaflet must re-render after fullscreen change
-      setTimeout(resizeMap, 300);
-    });
-
+      window.addEventListener("resize", resize);
+      window.addEventListener("orientationchange", resize);
+    };
   </script>
 </body>
 </html>
