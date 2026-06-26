@@ -4,71 +4,85 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>City Metro Map</title>
+
   <link rel="stylesheet" href="leaflet.css" />
-  <link rel="stylesheet" href="css/Control.FullScreen.css" />
+
   <style>
     html, body {
-      margin: 0; padding: 0;
-      height: 100vh; /* Full viewport height */
-      width: 100vw;  /* Full viewport width */
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #eee;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
 
     #map {
-      width: 98vw;
-      height: 98vh;
-      border: 2px solid #444;
-      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    /* optional fullscreen button */
+    #fullscreenBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 1000;
+      padding: 8px 12px;
+      border: none;
+      background: white;
+      cursor: pointer;
+      border-radius: 6px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
   </style>
 </head>
+
 <body>
+  <button id="fullscreenBtn">Fullscreen</button>
   <div id="map"></div>
 
   <script src="leaflet.js"></script>
-  <script src="js/Control.FullScreen.js"></script>
+
   <script>
+    // Image size (your updated 16:9 map)
     const imageWidth = 4640;
     const imageHeight = 2580;
+
     const bounds = [[0, 0], [imageHeight, imageWidth]];
 
     const map = L.map('map', {
       crs: L.CRS.Simple,
-      minZoom: -3,
+      minZoom: -2,
       maxZoom: 4,
-      zoomSnap: 0.1,
-      zoomDelta: 0.5,
       zoomControl: true,
-      maxBounds: bounds,
+      maxBounds: bounds
     });
 
-    L.imageOverlay('MetroMap.png', bounds).addTo(map);
+    // Add map image
+    L.imageOverlay(
+      'MetroMap.png',
+      bounds
+    ).addTo(map);
+
+    // Fit map to image
     map.fitBounds(bounds);
 
-    // Adjust zoom so image fits map container width-wise or height-wise
-    function updateZoom() {
-      const mapDiv = document.getElementById('map');
-      const containerWidth = mapDiv.clientWidth;
-      const containerHeight = mapDiv.clientHeight;
+    // Fix rendering on load/resizes
+    window.addEventListener('resize', () => {
+      map.invalidateSize();
+      map.fitBounds(bounds);
+    });
 
-      const zoomWidth = Math.log2(containerWidth / imageWidth);
-      const zoomHeight = Math.log2(containerHeight / imageHeight);
-
-      const zoom = Math.min(zoomWidth, zoomHeight);
-
-      map.setZoom(zoom);
-      map.setView([imageHeight / 2, imageWidth / 2], zoom);
-    }
-
-    updateZoom();
-    window.addEventListener('resize', updateZoom);
-
-    // Add fullscreen control
-    map.addControl(new L.Control.Fullscreen());
+    // Fullscreen button (browser fullscreen)
+    document.getElementById("fullscreenBtn").onclick = () => {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        document.exitFullscreen();
+      }
+    };
   </script>
 </body>
 </html>
-
