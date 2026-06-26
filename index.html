@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>City Metro Map</title>
+  <title>City Metro Map Editor</title>
 
   <link rel="stylesheet" href="leaflet.css" />
 
@@ -14,6 +14,11 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
+      background: black;
+    }
+
+    .leaflet-container {
+      background: black !important;
     }
 
     #map {
@@ -23,33 +28,39 @@
       height: 100vh;
     }
 
-    /* optional fullscreen button */
-    #fullscreenBtn {
+    #toolbar {
       position: absolute;
       top: 10px;
-      right: 10px;
+      left: 10px;
       z-index: 1000;
-      padding: 8px 12px;
-      border: none;
       background: white;
+      padding: 8px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      font-family: sans-serif;
+    }
+
+    button {
       cursor: pointer;
-      border-radius: 6px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      margin: 2px;
     }
   </style>
 </head>
 
 <body>
-  <button id="fullscreenBtn">Fullscreen</button>
+  <div id="toolbar">
+    <button onclick="toggleEdit()">Toggle Edit Mode</button>
+    <button onclick="clearStations()">Clear</button>
+    <span id="mode">Mode: VIEW</span>
+  </div>
+
   <div id="map"></div>
 
   <script src="leaflet.js"></script>
 
   <script>
-    // Image size (your updated 16:9 map)
     const imageWidth = 4640;
     const imageHeight = 2580;
-
     const bounds = [[0, 0], [imageHeight, imageWidth]];
 
     const map = L.map('map', {
@@ -60,29 +71,93 @@
       maxBounds: bounds
     });
 
-    // Add map image
-    L.imageOverlay(
-      'MetroMap.png',
-      bounds
-    ).addTo(map);
-
-    // Fit map to image
+    L.imageOverlay('Lego City County Metro June 2025.png', bounds).addTo(map);
     map.fitBounds(bounds);
 
-    // Fix rendering on load/resizes
-    window.addEventListener('resize', () => {
-      map.invalidateSize();
-      map.fitBounds(bounds);
+    let editMode = false;
+    let stations = [];
+
+    // Load saved stations (optional persistence)
+    const saved = localStorage.getItem("stations");
+    if (saved) {
+      stations = JSON.parse(saved);
+      stations.forEach(addStationMarker);
+    }
+
+    function saveStations() {
+      localStorage.setItem("stations", JSON.stringify(stations));
+    }
+
+    function addStationMarker(st) {
+      const marker = L.marker([st.y, st.x], { draggable: editMode }).addTo(map);
+
+      marker.bindPopup(`
+        <b contenteditable="true" onblur="updateName(${st.id}, this.innerText)">
+          ${st.name}
+        </b>
+        <br>
+        <small>Lat: ${st.y.toFixed(1)}, Lng: ${st.x.toFixed(1)}</small>
+      `);
+
+      marker.on('dragend', e => {
+        const pos = marker.getLatLng();
+        st.x = pos.lng;
+        st.y = pos.lat;
+        saveStations();
+      });
+
+      st.marker = marker;
+    }
+
+    function updateName(id, name) {
+      const st = stations.find(s => s.id === id);
+      if (st) {
+        st.name = name;
+        saveStations();
+      }
+    }
+
+    map.on('click', e => {
+      if (!editMode) return;
+
+      const name = prompt("Station name?");
+      if (!name) return;
+
+      const st = {
+        id: Date.now(),
+        name,
+        x: e.latlng.lng,
+        y: e.latlng.lat
+      };
+
+      stations.push(st);
+      addStationMarker(st);
+      saveStations();
     });
 
-    // Fullscreen button (browser fullscreen)
-    document.getElementById("fullscreenBtn").onclick = () => {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen();
-      } else {
-        document.exitFullscreen();
-      }
-    };
+    function toggleEdit() {
+      editMode = !editMode;
+      document.getElementById("mode").innerText =
+        "Mode: " + (editMode ? "EDIT" : "VIEW");
+
+      stations.forEach(s => {
+        if (s.marker) {
+          if (editMode) {
+            s.marker.dragging.enable();
+          } else {
+            s.marker.dragging.disable();
+          }
+        }
+      });
+    }
+
+    function clearStations() {
+      stations.forEach(s => {
+        if (s.marker) map.removeLayer(s.marker);
+      });
+      stations = [];
+      saveStations();
+    }
   </script>
 </body>
 </html>
