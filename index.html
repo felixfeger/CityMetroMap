@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- Mobile optimization -->
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
@@ -11,7 +10,7 @@
 
   <title>City Metro Map</title>
 
-  <!-- Local Leaflet files -->
+  <!-- Local Leaflet -->
   <link rel="stylesheet" href="leaflet.css">
 
   <style>
@@ -26,13 +25,13 @@
       width: 100%;
       height: 100%;
       overflow: hidden;
-      background: #ffffff;
+      background: white;
       font-family: Arial, Helvetica, sans-serif;
     }
 
-    /* =========================
-       TOP NAVIGATION BAR
-       ========================= */
+    /* =====================================
+       NAVIGATION BAR
+       ===================================== */
 
     #navbar {
       position: fixed;
@@ -42,7 +41,7 @@
 
       height: 64px;
 
-      background: #ffffff;
+      background: white;
       border-bottom: 1px solid #dddddd;
 
       display: flex;
@@ -55,20 +54,64 @@
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     }
 
+    /* =====================================
+       CITY METRO BRAND
+       ===================================== */
+
     #brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      color: #222222;
+      text-decoration: none;
+
       font-size: 22px;
       font-weight: 700;
-      color: #222222;
-
-      text-decoration: none;
 
       white-space: nowrap;
     }
 
+    /*
+      City Metro logo.
+
+      This is currently a simple "m" logo.
+      Replace it with your real logo image later
+      if you have one.
+    */
+
+    #metroLogo {
+      width: 38px;
+      height: 38px;
+
+      border-radius: 50%;
+
+      background: #1689e8;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      color: white;
+
+      font-size: 23px;
+      font-weight: 800;
+
+      line-height: 1;
+
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    /* =====================================
+       DESKTOP NAV
+       ===================================== */
+
     #navLinks {
       display: flex;
       align-items: center;
+
       margin-left: auto;
+
       gap: 8px;
     }
 
@@ -84,19 +127,16 @@
       font-size: 15px;
       font-weight: 600;
 
-      transition:
-        background 0.15s ease,
-        color 0.15s ease;
+      transition: background 0.15s ease;
     }
 
     #navLinks a:hover {
       background: #eeeeee;
-      color: #000000;
     }
 
-    /* =========================
-       MOBILE HAMBURGER
-       ========================= */
+    /* =====================================
+       HAMBURGER BUTTON
+       ===================================== */
 
     #menuButton {
       display: none;
@@ -114,17 +154,18 @@
       cursor: pointer;
 
       font-size: 25px;
+
       line-height: 44px;
       text-align: center;
     }
 
-    #menuButton:hover {
-      background: #e5e5e5;
+    #menuButton:active {
+      background: #dddddd;
     }
 
-    /* =========================
+    /* =====================================
        MOBILE MENU
-       ========================= */
+       ===================================== */
 
     #mobileMenu {
       display: none;
@@ -163,9 +204,9 @@
       background: #eeeeee;
     }
 
-    /* =========================
-       MAP
-       ========================= */
+    /* =====================================
+       MAP CONTAINER
+       ===================================== */
 
     #map {
       position: fixed;
@@ -190,7 +231,14 @@
       touch-action: none;
     }
 
-    /* Make zoom buttons easier to tap */
+    /* =====================================
+       ZOOM BUTTONS
+       ===================================== */
+
+    .leaflet-control-zoom {
+      margin: 12px !important;
+    }
+
     .leaflet-control-zoom a {
       width: 40px !important;
       height: 40px !important;
@@ -200,20 +248,27 @@
       font-size: 22px !important;
     }
 
-    /* =========================
+    /* =====================================
        MOBILE
-       ========================= */
+       ===================================== */
 
     @media (max-width: 700px) {
 
       #navbar {
         height: 58px;
-
         padding: 0 14px;
       }
 
       #brand {
         font-size: 19px;
+        gap: 8px;
+      }
+
+      #metroLogo {
+        width: 34px;
+        height: 34px;
+
+        font-size: 20px;
       }
 
       #navLinks {
@@ -230,13 +285,11 @@
 
       #map {
         top: 58px;
-
         height: calc(100vh - 58px);
       }
 
       .leaflet-control-zoom {
-        margin-top: 10px !important;
-        margin-right: 10px !important;
+        margin: 10px !important;
       }
 
       .leaflet-control-zoom a {
@@ -249,14 +302,21 @@
       }
     }
 
-    /* =========================
-       VERY SMALL PHONES
-       ========================= */
+    /* =====================================
+       SMALL PHONES
+       ===================================== */
 
     @media (max-width: 380px) {
 
       #brand {
         font-size: 17px;
+      }
+
+      #metroLogo {
+        width: 32px;
+        height: 32px;
+
+        font-size: 19px;
       }
 
       #menuButton {
@@ -270,9 +330,9 @@
 
 <body>
 
-  <!-- =========================
+  <!-- =====================================
        NAVIGATION
-       ========================= -->
+       ===================================== -->
 
   <nav id="navbar">
 
@@ -280,10 +340,16 @@
       id="brand"
       href="https://citymetro.xyz"
     >
-      City Metro
+
+      <img id="metroLogo" src="logo.png" alt="City Metro Logo">
+
+      <span>City Metro</span>
+
     </a>
 
+
     <!-- Desktop navigation -->
+
     <div id="navLinks">
 
       <a href="https://citymetro.xyz">
@@ -300,7 +366,9 @@
 
     </div>
 
+
     <!-- Mobile hamburger -->
+
     <button
       id="menuButton"
       aria-label="Open menu"
@@ -312,9 +380,9 @@
   </nav>
 
 
-  <!-- =========================
+  <!-- =====================================
        MOBILE MENU
-       ========================= -->
+       ===================================== -->
 
   <div id="mobileMenu">
 
@@ -333,37 +401,35 @@
   </div>
 
 
-  <!-- =========================
+  <!-- =====================================
        MAP
-       ========================= -->
+       ===================================== -->
 
   <div id="map"></div>
 
 
   <!-- Local Leaflet -->
+
   <script src="leaflet.js"></script>
+
 
   <script>
 
     /*
-     * ============================================
-     * CITY METRO INTERACTIVE MAP
-     * ============================================
+     * ==========================================
+     * CITY METRO MAP
+     * ==========================================
      *
      * Image:
      * Lego City County Metro August 2026.png
      *
-     * Actual image dimensions:
+     * Image size:
      * 2048 × 1331
      *
-     * The dimensions are detected automatically,
-     * so you don't have to change them later.
+     * The image dimensions are detected
+     * automatically.
      */
 
-
-    // --------------------------------------------
-    // Create map after image loads
-    // --------------------------------------------
 
     const image = new Image();
 
@@ -375,30 +441,36 @@
       const imageWidth = image.naturalWidth;
       const imageHeight = image.naturalHeight;
 
+
       console.log(
-        "Metro map image:",
+        "Map image:",
         imageWidth,
         "×",
         imageHeight
       );
 
 
-      // Image coordinates
+      /*
+       * Leaflet image coordinates
+       */
+
       const bounds = [
         [0, 0],
         [imageHeight, imageWidth]
       ];
 
 
-      // ------------------------------------------
-      // Create Leaflet map
-      // ------------------------------------------
+      /*
+       * ========================================
+       * CREATE MAP
+       * ========================================
+       */
 
       const map = L.map("map", {
 
         crs: L.CRS.Simple,
 
-        minZoom: -5,
+        minZoom: -4,
 
         maxZoom: 5,
 
@@ -425,9 +497,11 @@
       });
 
 
-      // ------------------------------------------
-      // Add Metro Map image
-      // ------------------------------------------
+      /*
+       * ========================================
+       * ADD IMAGE
+       * ========================================
+       */
 
       L.imageOverlay(
         "Lego City County Metro August 2026.png",
@@ -435,41 +509,86 @@
       ).addTo(map);
 
 
-      // ------------------------------------------
-      // Automatically fit map to screen
-      // ------------------------------------------
+      /*
+       * ========================================
+       * INITIAL MAP POSITION
+       * ========================================
+       *
+       * Instead of fitting the ENTIRE image,
+       * we zoom in so the actual Metro map is
+       * much larger.
+       */
 
-      function fitMap() {
+
+      function setInitialView() {
+
+        const screenWidth =
+          window.innerWidth;
+
+        const screenHeight =
+          window.innerHeight;
+
+
+        /*
+         * Desktop
+         */
+
+        if (screenWidth > 700) {
+
+          map.setView(
+            [
+              imageHeight * 0.50,
+              imageWidth * 0.50
+            ],
+            -0.15
+          );
+
+        }
+
+
+        /*
+         * Mobile
+         */
+
+        else {
+
+          map.setView(
+            [
+              imageHeight * 0.50,
+              imageWidth * 0.50
+            ],
+            -0.85
+          );
+
+        }
+
+      }
+
+
+      setInitialView();
+
+
+      /*
+       * ========================================
+       * RESIZE HANDLING
+       * ========================================
+       */
+
+      function resizeMap() {
 
         map.invalidateSize({
           animate: false
         });
 
-        map.fitBounds(
-          bounds,
-          {
-            padding: [10, 10],
-            animate: false
-          }
-        );
-
       }
 
-
-      // Initial fit
-      fitMap();
-
-
-      // ------------------------------------------
-      // Handle desktop resizing
-      // ------------------------------------------
 
       window.addEventListener(
         "resize",
         function () {
 
           setTimeout(
-            fitMap,
+            resizeMap,
             100
           );
 
@@ -477,33 +596,31 @@
       );
 
 
-      // ------------------------------------------
-      // Handle mobile rotation
-      // ------------------------------------------
-
       window.addEventListener(
         "orientationchange",
         function () {
 
           setTimeout(
-            fitMap,
+            function () {
+
+              resizeMap();
+
+              setInitialView();
+
+            },
             300
           );
 
         }
       );
 
-
-      // ------------------------------------------
-      // Handle fullscreen / viewport changes
-      // ------------------------------------------
 
       document.addEventListener(
         "fullscreenchange",
         function () {
 
           setTimeout(
-            fitMap,
+            resizeMap,
             300
           );
 
@@ -513,32 +630,43 @@
     };
 
 
-    // --------------------------------------------
-    // Image loading error
-    // --------------------------------------------
+    /*
+     * ==========================================
+     * IMAGE ERROR
+     * ==========================================
+     */
 
     image.onerror = function () {
 
       console.error(
-        "Could not load MetroMap image."
+        "Metro map image could not be loaded."
       );
 
       alert(
-        "Could not load MetroMap image. Make sure the file is named exactly:\n\nLego City County Metro August 2026.png"
+        "Could not load the Metro map image.\n\n" +
+        "Make sure the file is named exactly:\n\n" +
+        "Lego City County Metro August 2026.png"
       );
 
     };
 
 
-    // ============================================
-    // MOBILE MENU
-    // ============================================
+    /*
+     * ==========================================
+     * MOBILE MENU
+     * ==========================================
+     */
 
     const menuButton =
-      document.getElementById("menuButton");
+      document.getElementById(
+        "menuButton"
+      );
+
 
     const mobileMenu =
-      document.getElementById("mobileMenu");
+      document.getElementById(
+        "mobileMenu"
+      );
 
 
     let menuOpen = false;
@@ -553,20 +681,26 @@
 
         if (menuOpen) {
 
-          mobileMenu.style.display = "block";
+          mobileMenu.style.display =
+            "block";
 
-          menuButton.textContent = "✕";
+          menuButton.textContent =
+            "✕";
 
           menuButton.setAttribute(
             "aria-expanded",
             "true"
           );
 
-        } else {
+        }
 
-          mobileMenu.style.display = "none";
+        else {
 
-          menuButton.textContent = "☰";
+          mobileMenu.style.display =
+            "none";
+
+          menuButton.textContent =
+            "☰";
 
           menuButton.setAttribute(
             "aria-expanded",
@@ -579,12 +713,15 @@
     );
 
 
-    // --------------------------------------------
-    // Close menu when a link is clicked
-    // --------------------------------------------
+    /*
+     * Close mobile menu after
+     * selecting a page.
+     */
 
     const mobileLinks =
-      mobileMenu.querySelectorAll("a");
+      mobileMenu.querySelectorAll(
+        "a"
+      );
 
 
     mobileLinks.forEach(
@@ -594,9 +731,11 @@
           "click",
           function () {
 
-            mobileMenu.style.display = "none";
+            mobileMenu.style.display =
+              "none";
 
-            menuButton.textContent = "☰";
+            menuButton.textContent =
+              "☰";
 
             menuOpen = false;
 
