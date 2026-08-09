@@ -10,7 +10,6 @@
 
   <title>City Metro Map</title>
 
-  <!-- Local Leaflet -->
   <link rel="stylesheet" href="leaflet.css">
 
   <style>
@@ -73,16 +72,20 @@
     }
 
     #metroLogo {
-  width: 38px;
-  height: 38px;
+      width: 38px;
+      height: 38px;
 
-  object-fit: contain;
+      object-fit: contain;
 
-  display: block;
-}
+      display: block;
+
+      background: transparent;
+      border: none;
+      box-shadow: none;
+    }
 
     /* =====================================
-       DESKTOP NAV
+       DESKTOP NAVIGATION
        ===================================== */
 
     #navLinks {
@@ -114,7 +117,7 @@
     }
 
     /* =====================================
-       HAMBURGER BUTTON
+       HAMBURGER
        ===================================== */
 
     #menuButton {
@@ -184,7 +187,7 @@
     }
 
     /* =====================================
-       MAP CONTAINER
+       MAP
        ===================================== */
 
     #map {
@@ -211,7 +214,7 @@
     }
 
     /* =====================================
-       ZOOM BUTTONS
+       ZOOM CONTROLS
        ===================================== */
 
     .leaflet-control-zoom {
@@ -244,22 +247,16 @@
       }
 
       #metroLogo {
-  width: 38px;
-  height: 38px;
-  object-fit: contain;
-  display: block;
-  background: transparent;
-  border: none;
-  box-shadow: none;
-}
-
-        font-size: 20px;
+        width: 34px;
+        height: 34px;
       }
 
+      /* Hide desktop navigation */
       #navLinks {
         display: none;
       }
 
+      /* Show hamburger */
       #menuButton {
         display: block;
       }
@@ -300,13 +297,12 @@
       #metroLogo {
         width: 32px;
         height: 32px;
-
-        font-size: 19px;
       }
 
       #menuButton {
         width: 42px;
         height: 42px;
+
         line-height: 42px;
       }
     }
@@ -326,7 +322,11 @@
       href="https://citymetro.xyz"
     >
 
-      <img id="metroLogo" src="logo.png" alt="City Metro Logo">
+      <img
+        id="metroLogo"
+        src="logo.png"
+        alt="City Metro Logo"
+      >
 
       <span>City Metro</span>
 
@@ -393,10 +393,7 @@
   <div id="map"></div>
 
 
-  <!-- Local Leaflet -->
-
   <script src="leaflet.js"></script>
-
 
   <script>
 
@@ -404,17 +401,7 @@
      * ==========================================
      * CITY METRO MAP
      * ==========================================
-     *
-     * Image:
-     * Lego City County Metro August 2026.png
-     *
-     * Image size:
-     * 2048 × 1331
-     *
-     * The image dimensions are detected
-     * automatically.
      */
-
 
     const image = new Image();
 
@@ -426,18 +413,13 @@
       const imageWidth = image.naturalWidth;
       const imageHeight = image.naturalHeight;
 
-
       console.log(
-        "Map image:",
+        "Metro Map:",
         imageWidth,
         "×",
         imageHeight
       );
 
-
-      /*
-       * Leaflet image coordinates
-       */
 
       const bounds = [
         [0, 0],
@@ -455,7 +437,7 @@
 
         crs: L.CRS.Simple,
 
-        minZoom: -4,
+        minZoom: -5,
 
         maxZoom: 5,
 
@@ -484,7 +466,7 @@
 
       /*
        * ========================================
-       * ADD IMAGE
+       * IMAGE
        * ========================================
        */
 
@@ -496,53 +478,79 @@
 
       /*
        * ========================================
-       * INITIAL MAP POSITION
+       * DEVICE-SPECIFIC INITIAL VIEW
        * ========================================
        *
-       * Instead of fitting the ENTIRE image,
-       * we zoom in so the actual Metro map is
-       * much larger.
+       * DESKTOP:
+       * Show the entire image.
+       *
+       * MOBILE:
+       * Zoom in slightly so the map is
+       * easier to read.
        */
 
+      function setDeviceView() {
 
-      function setInitialView() {
-
-        const screenWidth =
+        const width =
           window.innerWidth;
 
-        const screenHeight =
+        const height =
           window.innerHeight;
 
 
         /*
-         * Desktop
+         * DESKTOP
+         * 701px and above
          */
 
-        if (screenWidth > 700) {
+        if (width > 700) {
 
-          map.setView(
-            [
-              imageHeight * 0.50,
-              imageWidth * 0.50
-            ],
-            -0.15
+          map.fitBounds(
+            bounds,
+            {
+              padding: [5, 5],
+              animate: false
+            }
           );
 
         }
 
 
         /*
-         * Mobile
+         * MOBILE
          */
 
         else {
 
-          map.setView(
-            [
-              imageHeight * 0.50,
-              imageWidth * 0.50
-            ],
-            -0.85
+          /*
+           * First calculate the normal
+           * "fit everything" zoom.
+           */
+
+          map.fitBounds(
+            bounds,
+            {
+              padding: [5, 5],
+              animate: false
+            }
+          );
+
+
+          /*
+           * Then zoom in slightly.
+           *
+           * This means mobile won't be
+           * extremely zoomed out.
+           */
+
+          const currentZoom =
+            map.getZoom();
+
+          map.setZoom(
+            currentZoom + 0.45,
+            {
+              animate: false
+            }
           );
 
         }
@@ -550,36 +558,55 @@
       }
 
 
-      setInitialView();
+      /*
+       * Initial view
+       */
+
+      setTimeout(
+        setDeviceView,
+        50
+      );
 
 
       /*
        * ========================================
-       * RESIZE HANDLING
+       * RESIZE
        * ========================================
        */
 
-      function resizeMap() {
-
-        map.invalidateSize({
-          animate: false
-        });
-
-      }
+      let resizeTimer;
 
 
       window.addEventListener(
         "resize",
         function () {
 
-          setTimeout(
-            resizeMap,
-            100
+          clearTimeout(resizeTimer);
+
+
+          resizeTimer = setTimeout(
+            function () {
+
+              map.invalidateSize({
+                animate: false
+              });
+
+
+              setDeviceView();
+
+            },
+            150
           );
 
         }
       );
 
+
+      /*
+       * ========================================
+       * PHONE ROTATION
+       * ========================================
+       */
 
       window.addEventListener(
         "orientationchange",
@@ -588,25 +615,14 @@
           setTimeout(
             function () {
 
-              resizeMap();
+              map.invalidateSize({
+                animate: false
+              });
 
-              setInitialView();
+              setDeviceView();
 
             },
-            300
-          );
-
-        }
-      );
-
-
-      document.addEventListener(
-        "fullscreenchange",
-        function () {
-
-          setTimeout(
-            resizeMap,
-            300
+            400
           );
 
         }
@@ -699,8 +715,8 @@
 
 
     /*
-     * Close mobile menu after
-     * selecting a page.
+     * Close menu after selecting
+     * a navigation link.
      */
 
     const mobileLinks =
